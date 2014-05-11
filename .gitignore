@@ -1,2 +1,5 @@
 node_modules/*
 app/vendor/*
+.DS_Store
+server/public/*
+npm-debug.log
