@@ -1,6 +1,13 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    copy: {
+      js: {
+        files: [
+          { src: ['app/**/*.js'], dest: 'server/public/', filter: 'isFile' }
+        ]
+      }
+    },
     jade: {
       develop: {
         options: {
@@ -15,14 +22,29 @@ module.exports = function(grunt) {
           }
         })
       }
+    },
+    watch: {
+      jade: {
+        files: ['app/**/*.jade'],
+        tasks: ['jade:develop']
+      },
+      js: {
+        files: ['app/**/*.js'],
+        tasks: ['copy:js']
+      }
     }
   });
 
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jade');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('build', [
-    'jade:develop'
+    'copy:js',
+    'jade:develop',
   ]);
+
+  grunt.registerTask('server', ['build', 'watch']);
 
   grunt.registerTask('default', ['build']);
 }
