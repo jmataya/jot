@@ -4,30 +4,33 @@ var Note = require('../models/note');
 var NotesController = {
 
   index: function *(next) {
-    this.body = 'The index';
+    this.body = yield Note.find({}).exec();
+    this.status = 200;
   },
 
   show: function *(next) {
-    this.body = 'The show for ' + this.params.id;
+    this.body = yield Note.find({_id: this.params.id}).exec();
+    this.status = 200;
   },
 
   create: function *(next) {
+    var error = undefined;
     var noteParams = yield parse(this);
-    var note = new Note({
-      title: noteParams.title,
-      content: noteParams.content
-    });
+    var note = new Note(noteParams);
 
-    note.save(function(err, note) {
-      if (err) {
-        return console.error(err);
-      }
-    });
+    try {
+      yield note.persist()();
+    } catch (err) {
+      error = { error: err.message };
+    }
 
-    yield next;
-
-    this.body = JSON.stringify(note);
-    this.status = 201;
+    if (error) {
+      this.body = JSON.stringify(error);
+      this.status = 500;
+    } else {
+      this.body = JSON.stringify(note);
+      this.status = 201;
+    }
   },
 
   update: function *(next) {
