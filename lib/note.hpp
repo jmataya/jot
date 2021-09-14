@@ -22,7 +22,7 @@
 class Note
 {
 public:
-    Note(std::string id_) : id(id_), contents("") {}
+    Note(std::string id_) : contents(""), id(id_) {}
     ~Note() {}
     
     std::string get_contents() {
